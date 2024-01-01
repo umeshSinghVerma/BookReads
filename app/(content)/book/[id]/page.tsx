@@ -166,7 +166,7 @@ async function getScrapedData(id: string) {
     const url = `https://biblioreads.eu.org/book/show/${id}`;
     let scrapedData = [];
     try {
-        const searchData = await axios.get(`https://readallbooks.netlify.app/getBook?bookUrl=${url}`);
+        const searchData = await axios.get(`https://puppeteer-render-l46i.onrender.com/searchBook?bookUrl=${url}`);
         scrapedData = searchData.data;
         uploadData(scrapedData, id);
         return scrapedData;
