@@ -81,6 +81,7 @@ async function getdata(id: string) {
         if (data.topics) {
             topicsArray = data.topics.split(',')
         }
+        data.topics = topicsArray;
         return data;
 
     }
@@ -103,6 +104,7 @@ async function getdata(id: string) {
             topicsArray = data.topics.split(',')
         }
         console.log("this is data", data);
+        data.topics = topicsArray;
         return data;
 
     } else {
