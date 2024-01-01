@@ -12,8 +12,8 @@ async function getTopicsFromSanity(bookName: string, authorName: string, topics:
         book_topic
     }`, { cache: 'no-store' });
     let TrimmedTopics: Array<string> = [];
-    if (topics.length > 0) {
-        let TrimmedTopics = topics.map((topic: string) => {
+    if (topics && topics.length > 0) {
+        TrimmedTopics = topics?.map((topic: string) => {
             return topic.trim();
         })
     }
