@@ -1,6 +1,7 @@
 const cheerio = require("cheerio");
 
-const QuotesSlugScraper = async (req, res) => {
+export async function POST(req) {
+  const data = await req.json();
   if (req.method === "POST") {
     const scrapeURL = req.body.queryURL.replaceAll(",", "/").split("&")[0];
     try {
@@ -107,4 +108,3 @@ const QuotesSlugScraper = async (req, res) => {
   }
 };
 
-export default QuotesSlugScraper;

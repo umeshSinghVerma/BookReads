@@ -1,6 +1,7 @@
 const cheerio = require("cheerio");
 
-const BooksScraper = async (req, res) => {
+export async function POST(req) {
+  const data = await req.json();
   if (req.method === "POST") {
     // The default sort is by popularity
     // Use the URL parameter "per_page" to get 100 instead of the default 30 books
@@ -93,4 +94,3 @@ const BooksScraper = async (req, res) => {
   }
 };
 
-export default BooksScraper;
