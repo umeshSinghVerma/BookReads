@@ -168,8 +168,10 @@ async function getScrapedData(id: string) {
     const url = `https://biblioreads.eu.org/book/show/${id}`;
     let scrapedData = [];
     try {
+        // const searchData = await axios.get(`https://puppeteer-render-l46i.onrender.com/searchBook?bookUrl=${url}`);
         const searchData = await axios.get(`https://puppeteer-render-l46i.onrender.com/searchBook?bookUrl=${url}`);
-        scrapedData = searchData.data;
+        // const searchData = await axios.get(`http://localhost:3000/api/getBook?bookUrl=${url}`);
+        scrapedData = await searchData.data;
         uploadData(scrapedData, id);
         return scrapedData;
     }
@@ -239,10 +241,9 @@ export default async function Page({ params }: { params: { id: string } }) {
                 <div className='my-4'>
                     <Link href={"/login"} className='py-3 px-10 font-semibold text-blue-950 block text-center md:hidden border-0 bg-green-400 rounded'>Log in to Listen Audio</Link>
                 </div>
-                {/* <div id='summary' className='flex flex-col gap-3 mb-8'>
-                    <p className='md:text-xl font-bold text-blue-950'>Summary</p>
+                <div id='summary'>
                     <Summary bookName={data.title} authorName={data.author} />
-                </div> */}
+                </div>
                 <div>
                     <div className='text-center md:text-3xl font-bold text-blue-950 mb-5'>
                         More Knowledge in less time
@@ -288,19 +289,17 @@ export default async function Page({ params }: { params: { id: string } }) {
                         <span className='md:text-xl font-bold text-blue-950'>about ?</span>
                         <p className='text-blue-950 my-4'>{data.description}</p>
                     </div>
-                    {/* <div id='bestquotes' className='my-10'>
-                        <span className='md:text-xl font-bold text-blue-950'>Best quote from</span>
-                        <span className='md:text-xl italic text-blue-950 mx-1'>{data.title}</span>
+                    <div id='bestquotes' className='my-10'>
                         <BestQuote bookName={data.title} authorName={data.author} />
-                    </div> */}
+                    </div>
                     {data.AuthorDetails && <div id='aboutauthor' className='my-10'>
                         <AboutAuthor authorName={data.author} bookName={data.title} AuthorDetails={data.AuthorDetails} />
                     </div>}
-                    {/* <div id='bestquotes' className='my-10'>
+                    <div id='bestquotes' className='my-10'>
                         <span className='md:text-xl font-bold text-blue-950'>Categories with</span>
                         <span className='md:text-xl italic text-blue-950 ml-2'>{data.title}</span>
                         <Categories bookName={data.title} authorName={data.author} type={'list'} />
-                    </div> */}
+                    </div>
                 </div>
             </div>
         </div>

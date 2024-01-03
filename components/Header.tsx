@@ -54,6 +54,7 @@ export default function Header() {
                 // const url = 'https://ystgfrwnmuf3ckhfiugrcopjye0wrtzs.lambda-url.us-east-2.on.aws/';
                 
                 const url = `https://puppeteer-render-l46i.onrender.com/getBook?searchBook=${search}`;
+                // const url = `http://localhost:3000/api/searchBook?book=${search}`;
                 const searchData = await axios.get(url);
                 setSearchResult(searchData.data.data);
             }

@@ -17,11 +17,11 @@ async function uploadSummary(bookName: string, summaryArray: Array<{ keyidea: st
 async function getSummaryFromSanity(bookName: string, authorName: string, setData: React.Dispatch<React.SetStateAction<string>>, setSanitySummary: React.Dispatch<React.SetStateAction<never[]>>, setStoredSummary: React.Dispatch<React.SetStateAction<SummaryType[]>>) {
     const beta = await client.fetch(`*[_type == "book" && title == "${bookName}" ]{wholeSummary}`, { cache: 'no-store' });
     if (beta.length == 0) {
-        getSummaryFromGPT(bookName, authorName, setData, setStoredSummary)
+        // getSummaryFromGPT(bookName, authorName, setData, setStoredSummary)
     }
     else {
         if (beta[0].wholeSummary == null) {
-            getSummaryFromGPT(bookName, authorName, setData, setStoredSummary)
+            // getSummaryFromGPT(bookName, authorName, setData, setStoredSummary)
         } else {
             setSanitySummary(beta[0].wholeSummary);
             setStoredSummary((prev) => {
@@ -166,23 +166,24 @@ export default function Summary({ bookName, authorName }: { bookName: string, au
     const [sanitySummary, setSanitySummary] = useState([]);
     const [storedSummary, setStoredSummary] = useState<SummaryType[]>([]);
     const [data, setData] = useState('');
-    const [summaryNumber, setSummaryNumber] = useState<number|undefined>(1);
-    const [currentSummary,setCurrentSummary]=useState([]);
+    const [summaryNumber, setSummaryNumber] = useState<number | undefined>(1);
+    const [currentSummary, setCurrentSummary] = useState([]);
     console.log(summaryNumber);
     useEffect(() => {
         if (bookName && authorName) {
             getSummaryFromSanity(bookName, authorName, setData, setSanitySummary, setStoredSummary);
         }
     }, [bookName, authorName])
-    useEffect(()=>{
-        if(summaryNumber!=undefined && storedSummary.length>0){
+    useEffect(() => {
+        if (summaryNumber != undefined && storedSummary.length > 0) {
             console.log("I came here");
-            setCurrentSummary(storedSummary[summaryNumber-1].Summary);
+            setCurrentSummary(storedSummary[summaryNumber - 1].Summary);
         }
-    },[summaryNumber,storedSummary])
-    console.log('this is currentSummary ',currentSummary,storedSummary);
+    }, [summaryNumber, storedSummary])
+    console.log('this is currentSummary ', currentSummary, storedSummary);
     return (
-        <>
+        <div>
+            {currentSummary.length>0&&<p className='md:text-xl font-bold text-blue-950'>Summary</p>}
             {data !== '' ? (
                 <div dangerouslySetInnerHTML={{ __html: data }} />
             ) : (
@@ -193,13 +194,13 @@ export default function Summary({ bookName, authorName }: { bookName: string, au
                     </div>
                 ))
             )}
-            <button className='py-3 px-10 font-semibold text-base text-blue-950 md:inline hidden border-0 bg-green-400 rounded' onClick={() => {
+            {/* <button className='py-3 px-10 font-semibold text-base text-blue-950 md:inline hidden border-0 bg-green-400 rounded' onClick={() => {
                 if (bookName && authorName) {
                     setData("");
                     getSummaryFromGPT(bookName, authorName, setData, setStoredSummary);
                 }
-            }}>Generate new summary</button>
-            <button onClick={() => {
+            }}>Generate new summary</button> */}
+            {/* <button onClick={() => {
                 setSummaryNumber((prev: number|undefined) => {
                     if (prev!=undefined && prev < storedSummary.length) {
                         return (prev + 1);
@@ -217,8 +218,8 @@ export default function Summary({ bookName, authorName }: { bookName: string, au
                         return 1;
                     }
                 })
-            }}>Previous</button>
+            }}>Previous</button> */}
 
-        </>
+        </div>
     )
 }

@@ -1,7 +1,9 @@
+
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import LoginButton from '@/components/LoginButton'
 import RatingCards from '@/components/RatingCards'
+import Savedbooks from '@/components/SavedBooks'
 import client from '@/sanity/client'
 import Link from 'next/link'
 require("dotenv").config();
@@ -255,7 +257,7 @@ export default function Home() {
           <p className='text-sm text-gray-700 whitespace-nowrap'>Downloads on all platforms</p>
         </div>
       </div> */}
-
+      <Savedbooks/>
       <Footer />
     </div>
   )

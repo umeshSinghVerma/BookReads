@@ -1,22 +1,12 @@
 import type { NextAuthOptions } from "next-auth";
-import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import TwitterProvider from "next-auth/providers/twitter";
 import axios from "axios";
 export const options: NextAuthOptions = {
   providers: [
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID as string,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string
-    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
-    }),
-    TwitterProvider({
-      clientId: process.env.TWITTER_CLIENT_ID as string,
-      clientSecret: process.env.TWITTER_CLIENT_SECRET as string
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -44,10 +34,8 @@ export const options: NextAuthOptions = {
               }
             } catch (error) {
               console.error("Error during user signup:", error);
-              // Handle the error as needed
             }
           }
-
           if (user.id !== "") {
             return user;
           } else {
@@ -55,7 +43,6 @@ export const options: NextAuthOptions = {
           }
         } catch (error) {
           console.error("Error during authorization:", error);
-          // Handle the error as needed
           return null;
         }
       }

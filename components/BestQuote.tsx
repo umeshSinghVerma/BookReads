@@ -4,7 +4,7 @@ import client from "@/sanity/client";
 import { useEffect, useState } from 'react'
 import React from 'react'
 
-async function updateBestQuote(bookName:string,bestQuoteString:string) {
+async function updateBestQuote(bookName: string, bestQuoteString: string) {
     client
         .patch({ query: `*[ _type == 'book' && title == "${bookName}" ]` }) // Document ID to patch
         .set({ book_bestQuote: bestQuoteString })
@@ -15,20 +15,20 @@ async function updateBestQuote(bookName:string,bestQuoteString:string) {
             console.error('the update failed: ', err.message)
         })
 }
-async function getBestQuoteFromSanity(bookName:string,setBestQuote:React.Dispatch<React.SetStateAction<string>>,authorName:string){
+async function getBestQuoteFromSanity(bookName: string, setBestQuote: React.Dispatch<React.SetStateAction<string>>, authorName: string) {
     const beta = await client.fetch(`*[_type == "book" && title == "${bookName}" ]{book_bestQuote}`, { cache: 'no-store' });
-    if(beta.length==0){
-        getBestQuote(bookName,setBestQuote,authorName)
+    if (beta.length == 0) {
+        // getBestQuote(bookName,setBestQuote,authorName)
     }
-    else{
-        if(beta[0].book_bestQuote==null){
-            getBestQuote(bookName,setBestQuote,authorName)
-        }else{
+    else {
+        if (beta[0].book_bestQuote == null) {
+            // getBestQuote(bookName,setBestQuote,authorName)
+        } else {
             setBestQuote(beta[0].book_bestQuote);
         }
     }
 }
-async function getBestQuote(bookName:string,setBestQuote:React.Dispatch<React.SetStateAction<string>>,authorName:string) {
+async function getBestQuote(bookName: string, setBestQuote: React.Dispatch<React.SetStateAction<string>>, authorName: string) {
     const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
@@ -77,25 +77,31 @@ async function getBestQuote(bookName:string,setBestQuote:React.Dispatch<React.Se
         ],
         stream: true,
     });
-    let bestQuoteString=''
+    let bestQuoteString = ''
     for await (const chunk of completion) {
         if (chunk.choices[0].delta.content) {
             const data = chunk.choices[0].delta.content;
-            bestQuoteString+=data;
+            bestQuoteString += data;
             setBestQuote(prev => prev += data)
         }
     }
-    updateBestQuote(bookName,bestQuoteString); 
+    updateBestQuote(bookName, bestQuoteString);
 }
 export default function BestQuote({ bookName, authorName }: { bookName: string, authorName: string }) {
     const [bestQuote, setBestQuote] = useState('');
-    
+
     useEffect(() => {
-        if(bookName && authorName){
-            getBestQuoteFromSanity(bookName,setBestQuote,authorName);
+        if (bookName && authorName) {
+            getBestQuoteFromSanity(bookName, setBestQuote, authorName);
         }
-    }, [bookName,authorName])
+    }, [bookName, authorName])
     return (
-        <p className='text-blue-950 my-4'>{bestQuote}</p>
+        <div>
+            {bestQuote!=''&&<div>
+                <span className='md:text-xl font-bold text-blue-950'>Best quote from</span>
+                <span className='md:text-xl italic text-blue-950 mx-1'>{bookName}</span>
+                <p className='text-blue-950 my-4'>{bestQuote}</p>
+            </div>}
+        </div>
     )
 }

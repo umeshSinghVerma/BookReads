@@ -50,11 +50,11 @@ async function getDataFromSanity(bookName: string, authorName: string, setData: 
         categories
     }`, { cache: 'no-store' });
     if (beta.length == 0) {
-        getCategoryFromGPT(bookName, authorName, setData);
+        // getCategoryFromGPT(bookName, authorName, setData);
     }
     else {
         if (beta[0].categories == null) {
-            getCategoryFromGPT(bookName, authorName, setData);
+            // getCategoryFromGPT(bookName, authorName, setData);
         } else {
             setData(beta[0].categories);
         }
@@ -210,31 +210,33 @@ export default function Categories({ bookName, authorName, type }: { bookName: s
         type === 'list' ? (
             <div className='flex flex-wrap p-1 cursor-pointer gap-6 whitespace-nowrap my-8'>
                 {
-                    data.length > 0 ? (data.map((topic: string, key: number) => {
+                    data.length > 0 && (data.map((topic: string, key: number) => {
                         return (
                             <Link href={categories.includes(topic) ? `/categories/${topic}` : "/categories"} key={key} className='text-center min-w-min md:w-[30%] flex-grow bg-[#f1f6f4] p-3 border-2 border-transparent hover:border-green-400 hover:rounded-md'>
                                 <p className=''>{topic}</p>
                             </Link>
                         )
-                    })) : (
-                        <div className="flex flex-wrap gap-6">
-                            <Box sx={{ width: 150 }}>
-                                <Skeleton width={150} height={80} />
-                            </Box>
-                            <Box sx={{ width: 150 }}>
-                                <Skeleton width={150} height={80} />
-                            </Box>
-                            <Box sx={{ width: 150 }}>
-                                <Skeleton width={150} height={80} />
-                            </Box>
-                            <Box sx={{ width: 150 }}>
-                                <Skeleton width={150} height={80} />
-                            </Box>
-                        </div>
-                    )
+                    })) 
+                    // : (
+                    //     <div className="flex flex-wrap gap-6">
+                    //         <Box sx={{ width: 150 }}>
+                    //             <Skeleton width={150} height={80} />
+                    //         </Box>
+                    //         <Box sx={{ width: 150 }}>
+                    //             <Skeleton width={150} height={80} />
+                    //         </Box>
+                    //         <Box sx={{ width: 150 }}>
+                    //             <Skeleton width={150} height={80} />
+                    //         </Box>
+                    //         <Box sx={{ width: 150 }}>
+                    //             <Skeleton width={150} height={80} />
+                    //         </Box>
+                    //     </div>
+                    // )
                 }
             </div>
-        ) : (
+        )
+         : (
             data[0] && <Link href={categories.includes(data[0]) ? `/categories/${data[0]}` : "/categories"} className='text-blue-600 w-min'>{`${data[0]}`}</Link>
         )
     );
