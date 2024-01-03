@@ -51,12 +51,17 @@ export default function Header() {
         try {
             if (search != '') {
                 setLoading(true);
-                // const url = 'https://ystgfrwnmuf3ckhfiugrcopjye0wrtzs.lambda-url.us-east-2.on.aws/';
-                
-                const url = `https://puppeteer-render-l46i.onrender.com/getBook?searchBook=${search}`;
-                // const url = `http://localhost:3000/api/searchBook?book=${search}`;
-                const searchData = await axios.get(url);
-                setSearchResult(searchData.data.data);
+                const data = {queryUrl:`https://www.goodreads.com/search?q=${encodeURIComponent(search)}`}
+                const searchData = await axios.post('/api/searchBooks',JSON.stringify(data));
+                console.log(searchData.data.result);
+                // const result :{author:string,cover:string,title:string,link:string,rating:string} = {
+                //     author:searchData.data.result.author,
+                //     cover:searchData.data.result.cover,
+                //     title:searchData.data.result.title,
+                //     link:searchData.data.result.bookUrl,
+                //     rating:searchData.data.result.rating
+                // }
+                setSearchResult(searchData.data.result);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -100,13 +105,13 @@ export default function Header() {
                     <div className='flex flex-col max-h-[500px] overflow-y-auto lg:w-[60%] m-auto p-[10px] whitespace-nowrap'>
                         {
                             searchResult.map((book: any, key) => {
-                                let link = book.link;
-                                link = link.replace("/show", "");
+                                let bookUrl = book.bookURL.split("?")[0];
+                                console.log(bookUrl);
                                 return (
-                                    <Link href={`${link}`} className='hover:text-blue-600' onClick={() => { setSearchResult([]) }}>
+                                    <Link href={`${bookUrl}`} className='hover:text-blue-600' key={book.id} onClick={() => { setSearchResult([]) }}>
                                         <div className='text-xs flex my-3 w-full h-min bg-white p-3 gap-5 justify-center items-center'>
                                             <div>
-                                                <img src={book.coverImage} alt="" className='max-h-[60px]' />
+                                                <img src={book.cover} alt="" className='max-h-[60px]' />
                                             </div>
                                             <div className='flex flex-col w-full'>
                                                 <p key={key} className='whitespace-break-spaces'>{book?.title}</p>
@@ -159,9 +164,9 @@ export default function Header() {
                     </div>
                 </div>
                 <div className='flex text-sm'>
-                    <Link href={session ? "/savedBooks":"/login"} className='p-2 border-0 md:text-base text-xs px-4 bg-green-400 rounded'>{session ? "Saved Books":`Log in`}</Link>
+                    <Link href={session ? "/savedBooks" : "/login"} className='p-2 border-0 md:text-base text-xs px-4 bg-green-400 rounded'>{session ? "Saved Books" : `Log in`}</Link>
                     {
-                        session && <button className='text-md text-blue-950 m-3' onClick={()=>{
+                        session && <button className='text-md text-blue-950 m-3' onClick={() => {
                             signOut();
                         }}>Logout</button>
                     }

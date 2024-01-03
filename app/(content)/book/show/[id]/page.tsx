@@ -68,20 +68,24 @@ async function getdata(id: string) {
     const beta = await client.fetch(`*[_type == "book" && slug == "${id}" ]`, { cache: 'no-store' });
     if (beta.length == 0) {
         const scrapedData = await getScrapedData(id);
+        console.log("data ca, ", scrapedData);
         const data = {
-            time: "",
             category: [],
-            bestQuote: "",
+            bestQuote: scrapedData.quotesURL || '',
             summary: [],
-            RatingReview: ``,
+            RatingReview: scrapedData.reviewsCount || '',
+            description: scrapedData.desc || '',
+            time: '',
+            topics: scrapedData.genres || [],
+            AuthorDetails: scrapedData.author || '',
+            related: scrapedData.related || [],
             aboutAuthor: '',
-            ...scrapedData
+            title: scrapedData.title || '',
+            author: '',
+            imgUrl: scrapedData.cover || '',
+            slogan: '',
+            rating: scrapedData.rating || ''
         }
-        let topicsArray: Array<string> = [];
-        if (data.topics) {
-            topicsArray = data.topics.split(',')
-        }
-        data.topics = topicsArray;
         return data;
 
     }
@@ -91,53 +95,25 @@ async function getdata(id: string) {
         console.log("I am coming here");
         const scrapedData = await getScrapedData(id);
         let data = {
-            time: "",
             category: [],
-            bestQuote: "",
+            bestQuote: scrapedData.quotesURL || '',
             summary: [],
-            RatingReview: ``,
+            RatingReview: scrapedData.reviewsCount || '',
+            description: scrapedData.desc || '',
+            time: '',
+            topics: scrapedData.genres || [],
+            AuthorDetails: scrapedData.author || '',
+            related: scrapedData.related || [],
             aboutAuthor: '',
-            ...scrapedData
+            title: scrapedData.title || '',
+            author: '',
+            imgUrl: scrapedData.cover || '',
+            slogan: '',
+            rating: scrapedData.rating || ''
         }
-        let topicsArray: Array<string> = [];
-        if (data.topics) {
-            topicsArray = data.topics.split(',')
-        }
-        console.log("this is data", data);
-        data.topics = topicsArray;
         return data;
 
     } else {
-
-        // let authors = "";
-        // let aboutAuthorArray: Array<string> = [];
-        // for (const a of book.book_author) {
-        //     const rawdata: any = await client.fetch(`*[ _id == "${a._ref}" ]`, { cache: 'no-store' });
-        //     authors = authors + " " + rawdata[0].authorName;
-        //     console.log("Rawdata: ", { authors, aboutAuthorArray, rawdata });
-        //     const authortext = JSON.stringify(rawdata[0].aboutAuthor);
-        //     aboutAuthorArray.push(authortext);
-        // }
-
-
-        // let bookCategory: Array<string> | undefined = [];
-        // for (const a of book.categories) {
-        //     const rawCategory: any = await client.getDocument(a._ref);
-        //     bookCategory?.push(rawCategory.name);
-        // }
-
-        // let bookImageUrl: string | undefined = "";
-        // const imageData: any = book.book_image.asset._ref;
-        // const rawImage: any = await client.getDocument(imageData);
-        // bookImageUrl = rawImage.url;
-
-        // const ratingArray = book.book_ratingsReceived;
-        // const ratingNumber = ratingArray.length;
-        // let rating = 0;
-        // ratingArray.map((obj: any) => {
-        //     rating = rating + obj.starRating;
-        // })
-        // rating = rating / ratingNumber;
 
         const alpha = {
             description: book?.about || "",
@@ -165,13 +141,17 @@ async function getdata(id: string) {
 
 }
 async function getScrapedData(id: string) {
+    console.log('object', id)
     const url = `https://biblioreads.eu.org/book/show/${id}`;
-    let scrapedData = [];
+    let scrapedData: any = [];
     try {
-        // const searchData = await axios.get(`https://puppeteer-render-l46i.onrender.com/searchBook?bookUrl=${url}`);
-        const searchData = await axios.get(`https://puppeteer-render-l46i.onrender.com/searchBook?bookUrl=${url}`);
-        // const searchData = await axios.get(`http://localhost:3000/api/getBook?bookUrl=${url}`);
-        scrapedData = await searchData.data;
+
+        const body = JSON.stringify({
+            queryURL: `https://www.goodreads.com/book/show/${id}`,
+        })
+        const searchData = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/bookScraper`, body);
+        scrapedData = searchData.data;
+        console.log(scrapedData)
         uploadData(scrapedData, id);
         return scrapedData;
     }
@@ -211,7 +191,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <Favourite bookTitle={data.title} bookImg={data.imgUrl} bookAuthor={data.author} initialStatus={bookStatus} />
                         </div>
                         <div className='font-bold text-blue-950 mb-5 whitespace-break-spaces text-sm'>
-                            {data.author}
+                            By.{data.AuthorDetails[0].name}
                         </div>
                         <div className='my-4'>
                             {data.slogan}
