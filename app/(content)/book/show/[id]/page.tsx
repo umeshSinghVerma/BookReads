@@ -12,6 +12,7 @@ import Topics from '@/components/Topics'
 import axios from 'axios'
 import Favourite from '@/components/Favourite'
 import { getServerSession } from "next-auth"
+import authorDetails from '@/sanity/schemas/author'
 
 async function getStatus(user: any, bookTitle: string, bookAuthor: string, bookImg: string) {
     const previousData = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user?email=${user?.email}`, {
@@ -42,21 +43,15 @@ async function getStatus(user: any, bookTitle: string, bookAuthor: string, bookI
     }
 }
 async function uploadData(data: any, id: string) {
-    let topicsArray: Array<string> = [];
-    if (data.topics) {
-        topicsArray = data.topics.split(',')
-    }
     const doc = {
         _type: 'book',
         slug: id,
         title: data.title,
         imgUrl: data.imgUrl,
-        book_author: data.author,
         book_tagline: data.slogan,
         about: data.description,
         book_rating: data.rating,
-        book_topic: topicsArray,
-        book_AllAuthors: data.AuthorDetails
+        book_topic: data.topics,
     }
     client.create(doc).then((res) => {
         console.log(`Book is created, document ID is ${res._id}`)
@@ -68,53 +63,37 @@ async function getdata(id: string) {
     const beta = await client.fetch(`*[_type == "book" && slug == "${id}" ]`, { cache: 'no-store' });
     if (beta.length == 0) {
         const scrapedData = await getScrapedData(id);
-        console.log("data ca, ", scrapedData);
-        const data = {
+        const data: {
+            category: Array<string>,
+            bestQuote: string,
+            summary: any,
+            RatingReview: string,
+            description: string,
+            topics: Array<string>,
+            AuthorDetails: Array<{ id: number, name: string, url: string,desc:string }>,
+            related: any,
+            title: string,
+            imgUrl: string,
+            slogan: string,
+            rating: string
+        } = {
             category: [],
             bestQuote: scrapedData.quotesURL || '',
             summary: [],
             RatingReview: scrapedData.reviewsCount || '',
             description: scrapedData.desc || '',
-            time: '',
             topics: scrapedData.genres || [],
-            AuthorDetails: scrapedData.author || '',
+            AuthorDetails: scrapedData.author || [],
             related: scrapedData.related || [],
-            aboutAuthor: '',
             title: scrapedData.title || '',
-            author: '',
             imgUrl: scrapedData.cover || '',
             slogan: '',
             rating: scrapedData.rating || ''
         }
+        uploadData(data, id);
         return data;
-
-    }
-    const book = await beta[0];
-
-    if (book.title == null) {
-        console.log("I am coming here");
-        const scrapedData = await getScrapedData(id);
-        let data = {
-            category: [],
-            bestQuote: scrapedData.quotesURL || '',
-            summary: [],
-            RatingReview: scrapedData.reviewsCount || '',
-            description: scrapedData.desc || '',
-            time: '',
-            topics: scrapedData.genres || [],
-            AuthorDetails: scrapedData.author || '',
-            related: scrapedData.related || [],
-            aboutAuthor: '',
-            title: scrapedData.title || '',
-            author: '',
-            imgUrl: scrapedData.cover || '',
-            slogan: '',
-            rating: scrapedData.rating || ''
-        }
-        return data;
-
     } else {
-
+        const book = await beta[0];
         const alpha = {
             description: book?.about || "",
             time: book?.book_timeToRead || "",
@@ -122,11 +101,8 @@ async function getdata(id: string) {
             category: book?.categories || [],
             bestQuote: book?.book_bestQuote || "",
             summary: book?.wholeSummary || [],
-            AuthorDetails: [],
-
-
+            AuthorDetails: book?.book_AllAuthors || [],
             aboutAuthor: book?.book_aboutAuthor || "",
-
             title: book?.title || "",
             author: book?.book_author || "",
             imgUrl: book?.imgUrl || "",
@@ -134,15 +110,11 @@ async function getdata(id: string) {
             rating: book?.book_rating || "",
             RatingReview: `${5} Ratings`
         }
-
-
         return alpha;
     }
 
 }
 async function getScrapedData(id: string) {
-    console.log('object', id)
-    const url = `https://biblioreads.eu.org/book/show/${id}`;
     let scrapedData: any = [];
     try {
 
@@ -151,8 +123,6 @@ async function getScrapedData(id: string) {
         })
         const searchData = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/bookScraper`, body);
         scrapedData = searchData.data;
-        console.log(scrapedData)
-        uploadData(scrapedData, id);
         return scrapedData;
     }
     catch (e) {
@@ -164,12 +134,14 @@ async function getScrapedData(id: string) {
 export default async function Page({ params }: { params: { id: string } }) {
     const bookTitle: string = decodeURIComponent(params.id)
     const data = await getdata(bookTitle);
+    console.log("data ", data);
 
     const alpha = await getServerSession();
     let bookStatus = undefined;
     if (alpha) {
-        bookStatus = await getStatus(alpha?.user, data.title, data.author, data.imgUrl);
+        bookStatus = await getStatus(alpha?.user, data.title, "", data.imgUrl);
     }
+    console.log('this is data.AuthorDetails ', data.AuthorDetails);
 
     return (
         <div>
@@ -188,10 +160,10 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <div className='text-3xl font-bold text-blue-950 mb-5 '>
                                 {data.title}
                             </div>
-                            <Favourite bookTitle={data.title} bookImg={data.imgUrl} bookAuthor={data.author} initialStatus={bookStatus} />
+                            <Favourite bookTitle={data.title} bookImg={data.imgUrl} bookAuthor={""} initialStatus={bookStatus} />
                         </div>
                         <div className='font-bold text-blue-950 mb-5 whitespace-break-spaces text-sm'>
-                            By.{data.AuthorDetails[0].name}
+                            By.{data?.AuthorDetails[0]?.name}
                         </div>
                         <div className='my-4'>
                             {data.slogan}
@@ -208,7 +180,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                         <div className='flex flex-col-reverse md:flex-col my-4'>
                             <div>
                                 <div className='flex flex-wrap  p-1 cursor-pointer gap-6 whitespace-nowrap md:mb-8'>
-                                    <Topics bookName={data.title} authorName={data.author} topics={data.topics} />
+                                    <Topics bookId={bookTitle} topics={data.topics} />
                                 </div>
                             </div>
                             <TableComponents summaryLength={data.summary.length} title={data.title} />
@@ -222,7 +194,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     <Link href={"/login"} className='py-3 px-10 font-semibold text-blue-950 block text-center md:hidden border-0 bg-green-400 rounded'>Log in to Listen Audio</Link>
                 </div>
                 <div id='summary'>
-                    <Summary bookName={data.title} authorName={data.author} />
+                    <Summary bookName={data.title} authorName={""} />
                 </div>
                 <div>
                     <div className='text-center md:text-3xl font-bold text-blue-950 mb-5'>
@@ -270,15 +242,15 @@ export default async function Page({ params }: { params: { id: string } }) {
                         <p className='text-blue-950 my-4'>{data.description}</p>
                     </div>
                     <div id='bestquotes' className='my-10'>
-                        <BestQuote bookName={data.title} authorName={data.author} />
+                        <BestQuote bookName={data.title} authorName={""} />
                     </div>
                     {data.AuthorDetails && <div id='aboutauthor' className='my-10'>
-                        <AboutAuthor authorName={data.author} bookName={data.title} AuthorDetails={data.AuthorDetails} />
+                        <AboutAuthor bookId={bookTitle} AuthorDetails={data.AuthorDetails} />
                     </div>}
                     <div id='bestquotes' className='my-10'>
                         <span className='md:text-xl font-bold text-blue-950'>Categories with</span>
                         <span className='md:text-xl italic text-blue-950 ml-2'>{data.title}</span>
-                        <Categories bookName={data.title} authorName={data.author} type={'list'} />
+                        <Categories bookName={data.title} authorName={""} type={'list'} />
                     </div>
                 </div>
             </div>

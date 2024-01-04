@@ -39,16 +39,6 @@ const book = {
     //   }]
     // },
     {
-      name: 'book_author',
-      title: 'Author',
-      type: 'string'
-    },
-    {
-      name: 'book_aboutAuthor',
-      title: 'About Author',
-      type: 'string'
-    },
-    {
       name: 'book_AllAuthors',
       title: 'Authors',
       type: 'array',
@@ -57,8 +47,10 @@ const book = {
         type:'object',
         title:'Author',
         fields:[
-          {name:'authorName',type:'string',title:'Author Name'},
-          {name:'authorAbout',type:'string',title:'About Author'}
+          {name:'id',type:'number',title:'Id'},
+          {name:'name',type:'string',title:'Author Name'},
+          {name:'url',type:'string',title:'Url'},
+          {name:'desc',type:'string',title:'About Author'}
         ]
       }]
     },
