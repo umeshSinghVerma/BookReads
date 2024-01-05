@@ -32,23 +32,31 @@ async function getSummaryFromSanity(bookName: string, authorName: string, setDat
 }
 
 async function getSummaryFromGPT(bookName: string, authorName: string, setData: any) {
-    console.log("i am h")
-    let keyIdeas: Array<string> = [];
-    let summaries: Array<string> = [];
-    let str = '';
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = `Summarize the plot ofthe book ${bookName} by ${authorName} and aim for a length of approximately 500 words.`
+    try {
+        console.log("i am h");
+        let keyIdeas: Array<string> = [];
+        let summaries: Array<string> = [];
+        let str = '';
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const prompt = `Summarize the plot of the book ${bookName} by ${authorName} and aim for a length of approximately 500 words.`;
 
-
-    const result = await model.generateContentStream(prompt);
-    let sum = '';
-    for await (const chunk of result.stream) {
-        const data = chunk.text();
-        sum += data;
-        setData(sum);
+        const result = await model.generateContentStream(prompt);
+        let sum = '';
+        for await (const chunk of result.stream) {
+            const data = chunk.text();
+            sum += data;
+            setData(sum);
+        }
+        
+        uploadSummary(bookName, sum);
+    } catch (error:any) {
+        // Handle the error
+        console.error("Error in getSummaryFromGPT:", error.message);
+        // Optionally, you can rethrow the error to let the caller handle it as well
+        throw error;
     }
-    uploadSummary(bookName,sum)
 }
+
 interface SummaryType {
     type: string;
     Summary: any;
