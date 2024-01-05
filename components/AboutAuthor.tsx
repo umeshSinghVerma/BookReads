@@ -3,7 +3,6 @@ import { AnyArn } from "aws-sdk/clients/groundstation";
 import axios from "axios";
 import React from 'react'
 async function updateAboutAuthor(bookId: string, AuthorDetails: Array<{id:number, name: string, url:string, desc: string }>) {
-    console.log('this is the  data to feed ',AuthorDetails);
     if (AuthorDetails.length > 0) {
         client
             .patch({ query: `*[ _type == 'book' && slug == "${bookId}" ]` })
@@ -50,7 +49,6 @@ async function getAboutTheAuthorFromSanity
 }
 export default async function AboutAuthor({ bookId, AuthorDetails }: { bookId: string, AuthorDetails: any }) {
     const aboutAuthor = await getAboutTheAuthorFromSanity(bookId, AuthorDetails);
-    console.log("this is about author ", aboutAuthor);
     return (
         <>
             { aboutAuthor && aboutAuthor?.length > 0 && <div>

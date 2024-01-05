@@ -35,7 +35,7 @@ export default function Home() {
     // const posts = await client.fetch('*[_type == "book" && title == "the Hobbit"]')
 
     // TO Delete the post haaving empty titles
-    const posts = await client.fetch('*[_type == "book" && title == null]')
+    const posts = await client.fetch('*[_type == "book"]')
     posts.forEach((element:any) => {
       client
         .delete(`${element._id}`)
@@ -145,7 +145,7 @@ export default function Home() {
               <LoginButton />
             </div>
           </div>
-          <div className='w-full mb-10 md:hidden flex flex-col justify-center items-center'>
+          <div className='w-full mb-10 md:hidden flex flex-col justify-center items-center '>
             <img src="/heromobileheading.png" alt="heading" />
             <div className='my-4'>
               <LoginButton />

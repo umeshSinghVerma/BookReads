@@ -134,14 +134,12 @@ async function getScrapedData(id: string) {
 export default async function Page({ params }: { params: { id: string } }) {
     const bookTitle: string = decodeURIComponent(params.id)
     const data = await getdata(bookTitle);
-    console.log("data ", data);
 
     const alpha = await getServerSession();
     let bookStatus = undefined;
     if (alpha) {
         bookStatus = await getStatus(alpha?.user, data.title, "", data.imgUrl);
     }
-    console.log('this is data.AuthorDetails ', data.AuthorDetails);
 
     return (
         <div>
@@ -194,7 +192,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     <Link href={"/login"} className='py-3 px-10 font-semibold text-blue-950 block text-center md:hidden border-0 bg-green-400 rounded'>Log in to Listen Audio</Link>
                 </div>
                 <div id='summary'>
-                    <Summary bookName={data.title} authorName={""} />
+                    <Summary bookName={data.title} authorName={data?.AuthorDetails[0]?.name} />
                 </div>
                 <div>
                     <div className='text-center md:text-3xl font-bold text-blue-950 mb-5'>

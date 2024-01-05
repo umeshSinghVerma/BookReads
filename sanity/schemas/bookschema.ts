@@ -122,28 +122,7 @@ const book = {
     {
       name: 'wholeSummary',
       title: 'Summary',
-      type: 'array',
-      of: [
-        {
-          name: 'keyIdeas',
-          title: 'Key Ideas',
-          type: 'object',
-          fields: [
-            {
-              name: 'keyidea',
-              title: 'Key Idea',
-              type: 'string'
-            },
-            {
-              name: 'summary',
-              title: 'Summary',
-              type: 'string'
-              // type: 'array',
-              // of: [{ type: 'block' }]
-            },
-          ]
-        }
-      ]
+      type: 'string'
     }
   ]
 }
