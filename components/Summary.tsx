@@ -1,11 +1,8 @@
-'use client'
-import openai from "@/openAi";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_BARD_API);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_BARD_API);
 
 import client from "@/sanity/client";
-import React, { useEffect, useState } from 'react'
-async function uploadSummary(bookName: string, summary:string) {
+async function uploadSummary(bookName: string, summary: string) {
     client
         .patch({ query: `*[_type == "book" && title == "${bookName}" ]` })
         .set({ wholeSummary: summary })
@@ -17,21 +14,21 @@ async function uploadSummary(bookName: string, summary:string) {
         })
 }
 
-async function getSummaryFromSanity(bookName: string, authorName: string, setData: React.Dispatch<React.SetStateAction<string>>) {
+async function getSummaryFromSanity(bookName: string, authorName: string) {
     const beta = await client.fetch(`*[_type == "book" && title == "${bookName}" ]{wholeSummary}`, { cache: 'no-store' });
     if (beta.length == 0) {
-        getSummaryFromGPT(bookName, authorName, setData);
+        getSummaryFromGPT(bookName, authorName);
     }
     else {
         if (!beta[0].wholeSummary) {
-            getSummaryFromGPT(bookName, authorName, setData)
+            getSummaryFromGPT(bookName, authorName)
         } else {
-            setData(beta[0].wholeSummary)
+            return beta[0].wholeSummary;
         }
     }
 }
 
-async function getSummaryFromGPT(bookName: string, authorName: string, setData: any) {
+async function getSummaryFromGPT(bookName: string, authorName: string) {
     console.log("i am h")
     let keyIdeas: Array<string> = [];
     let summaries: Array<string> = [];
@@ -45,26 +42,16 @@ async function getSummaryFromGPT(bookName: string, authorName: string, setData: 
     for await (const chunk of result.stream) {
         const data = chunk.text();
         sum += data;
-        setData(sum);
     }
-    uploadSummary(bookName,sum)
+    uploadSummary(bookName, sum);
+    return sum;
 }
-interface SummaryType {
-    type: string;
-    Summary: any;
-}
-
-export default function Summary({ bookName, authorName }: { bookName: string, authorName: string }) {
-    const [data, setData] = useState<string>('');
-    useEffect(() => {
-        getSummaryFromSanity(bookName, authorName, setData);
-    }, [])
+export default async function Summary({ bookName, authorName }: { bookName: string, authorName: string }) {
+    const data = await getSummaryFromSanity(bookName, authorName);
     return (
         <div>
             <p className='md:text-xl font-bold text-blue-950'>Summary</p>
-            <div className="my-4">
-                {data}
-            </div>
+            <div className="my-4" dangerouslySetInnerHTML={{__html:data}}></div>
         </div>
     )
 }
