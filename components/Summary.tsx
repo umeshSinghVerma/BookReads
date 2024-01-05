@@ -1,7 +1,6 @@
 'use client'
 import openai from "@/openAi";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_BARD_API);
 
 import client from "@/sanity/client";
 import React, { useEffect, useState } from 'react'
@@ -33,6 +32,7 @@ async function getSummaryFromSanity(bookName: string, authorName: string, setDat
 
 async function getSummaryFromGPT(bookName: string, authorName: string, setData: any) {
     try {
+        const genAI = new GoogleGenerativeAI('AIzaSyAjSTF_9A09G_1NZsPa3oBk9D34XIZeOQU');
         console.log("i am h");
         let keyIdeas: Array<string> = [];
         let summaries: Array<string> = [];
