@@ -1,7 +1,7 @@
 'use client'
 import openai from "@/openAi";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI('AIzaSyAjSTF_9A09G_1NZsPa3oBk9D34XIZeOQU');
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_BARD_API);
 
 import client from "@/sanity/client";
 import React, { useEffect, useState } from 'react'

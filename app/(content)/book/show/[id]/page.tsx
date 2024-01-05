@@ -245,11 +245,6 @@ export default async function Page({ params }: { params: { id: string } }) {
                     {data.AuthorDetails && <div id='aboutauthor' className='my-10'>
                         <AboutAuthor bookId={bookTitle} AuthorDetails={data.AuthorDetails} />
                     </div>}
-                    <div id='bestquotes' className='my-10'>
-                        <span className='md:text-xl font-bold text-blue-950'>Categories with</span>
-                        <span className='md:text-xl italic text-blue-950 ml-2'>{data.title}</span>
-                        <Categories bookName={data.title} authorName={""} type={'list'} />
-                    </div>
                 </div>
             </div>
         </div>
