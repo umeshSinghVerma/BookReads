@@ -4,7 +4,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 import client from "@/sanity/client";
 import React, { useEffect, useState } from 'react'
-async function uploadSummary(bookName: string, summary:string) {
+async function uploadSummary(bookName: string, summary: string) {
     client
         .patch({ query: `*[_type == "book" && title == "${bookName}" ]` })
         .set({ wholeSummary: summary })
@@ -38,7 +38,11 @@ async function getSummaryFromGPT(bookName: string, authorName: string, setData: 
         let summaries: Array<string> = [];
         let str = '';
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        const prompt = `Summarize the plot of the book ${bookName} by ${authorName} and aim for a length of approximately 500 words.`;
+        const prompt1 = `Summarize the plot of the book ${bookName} by ${authorName} and aim for the detailed long summary atleast 1000 lines to cover all essential things  which a strandard very good summary in the form of html break it down in lists paragraphs divs etc intelligently also add relavent tailwnd css classes,do something attractive css so that It will be helpful to visitors and visually appealing like google's theme ,do not write any text greater than tailwind class text-xl ,also add relavent margin and padding between elements and also take care of responsiveness while adding tailwind css classes and most importantly Do not write anything irrelevant like '''html ''' so on also do not try to give the entire html document s this data is going to display in the next js application so I have already set up the tailwind css into the project to do not include the css links ets give the data in div
+        `;
+
+        const prompt = `Generate an engaging and comprehensive book summary for the book titled "${bookName}" written by ${authorName}. Ensure that the summary provides enough details to give users a fair idea about the essence of the book. Make the summary visually appealing and responsive using HTML elements like paragraphs and divs, with relevant Tailwind CSS classes. Limit the text size to Tailwind class text-lg or smaller. The goal is to create a summary that captivates users and leaves them with a strong understanding of the book.
+        `
 
         const result = await model.generateContentStream(prompt);
         let sum = '';
@@ -47,9 +51,9 @@ async function getSummaryFromGPT(bookName: string, authorName: string, setData: 
             sum += data;
             setData(sum);
         }
-        
+
         uploadSummary(bookName, sum);
-    } catch (error:any) {
+    } catch (error: any) {
         // Handle the error
         console.error("Error in getSummaryFromGPT:", error.message);
         // Optionally, you can rethrow the error to let the caller handle it as well
@@ -65,14 +69,16 @@ interface SummaryType {
 export default function Summary({ bookName, authorName }: { bookName: string, authorName: string }) {
     const [data, setData] = useState<string>('');
     useEffect(() => {
-        getSummaryFromSanity(bookName, authorName, setData);
+        if (bookName && authorName) { getSummaryFromSanity(bookName, authorName, setData); }
     }, [])
     return (
         <div>
             <p className='md:text-xl font-bold text-blue-950'>Summary</p>
-            <div className="my-4">
-                {data}
-            </div>
+            <main className="my-4" dangerouslySetInnerHTML={{ __html: data }}></main>
+            <button onClick={()=>{
+                setData("");
+                getSummaryFromGPT(bookName,authorName,setData);
+            }}>Regenerate</button>
         </div>
     )
 }

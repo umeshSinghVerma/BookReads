@@ -90,7 +90,9 @@ async function getdata(id: string) {
             slogan: '',
             rating: scrapedData.rating || ''
         }
-        uploadData(data, id);
+        if(data.title!="" && data.AuthorDetails.length>0){
+            uploadData(data, id);
+        }
         return data;
     } else {
         const book = await beta[0];
