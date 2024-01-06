@@ -57,7 +57,7 @@ export default async function AboutAuthor({ bookId, AuthorDetails }: { bookId: s
                     aboutAuthor && aboutAuthor.map((author: { id: number, name: string, url: string,desc:string },key:number) => {
                         return <div key={key}>
                             <h1 className="md:text-lg font-bold text-blue-950 mt-5 mb-2">{author.name}</h1>
-                            <p dangerouslySetInnerHTML={{ __html: author?.desc }}></p>
+                            <div dangerouslySetInnerHTML={{ __html: author?.desc }}></div>
                         </div>
                     })
                 }
