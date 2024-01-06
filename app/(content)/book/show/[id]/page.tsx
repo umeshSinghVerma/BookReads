@@ -48,6 +48,7 @@ async function uploadData(data: any, id: string) {
         slug: id,
         title: data.title,
         imgUrl: data.imgUrl,
+        book_AllAuthors: data.AuthorDetails,
         book_tagline: data.slogan,
         about: data.description,
         book_rating: data.rating,

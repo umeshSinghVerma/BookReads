@@ -1,5 +1,4 @@
 import client from "@/sanity/client";
-import { AnyArn } from "aws-sdk/clients/groundstation";
 import axios from "axios";
 import React from 'react'
 async function updateAboutAuthor(bookId: string, AuthorDetails: Array<{ id: number, name: string, url: string, desc: string }>) {
