@@ -75,10 +75,10 @@ export default function Summary({ bookName, authorName }: { bookName: string, au
         <div>
             <p className='md:text-xl font-bold text-blue-950'>Summary</p>
             <main className="my-4" dangerouslySetInnerHTML={{ __html: data }}></main>
-            <button onClick={()=>{
+            {data!='' && (<button className="p-2 border-0 md:text-base text-xs px-4 bg-green-400 rounded" onClick={()=>{
                 setData("");
                 getSummaryFromGPT(bookName,authorName,setData);
-            }}>Regenerate</button>
+            }}>Regenerate</button>)}
         </div>
     )
 }
