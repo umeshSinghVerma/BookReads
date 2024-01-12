@@ -54,7 +54,7 @@ export default function Header() {
                 const data = {queryUrl:`https://www.goodreads.com/search?q=${encodeURIComponent(search)}`}
                 const searchData = await axios.post('/api/searchBooks',JSON.stringify(data));
                 console.log(searchData.data.result);
-                // const result :{author:string,cover:string,title:string,link:string,rating:string} = {
+                // const result :{author:string,cover:string,title:string,link:string,rating:string}   = {
                 //     author:searchData.data.result.author,
                 //     cover:searchData.data.result.cover,
                 //     title:searchData.data.result.title,

@@ -12,10 +12,9 @@ import Topics from '@/components/Topics'
 import axios from 'axios'
 import Favourite from '@/components/Favourite'
 import { getServerSession } from "next-auth"
-import authorDetails from '@/sanity/schemas/author'
 
 async function getStatus(user: any, bookTitle: string, bookAuthor: string, bookImg: string) {
-    const previousData = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user?email=${user?.email}`, {
+    const previousData = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getBooksMongo`,{email:user?.email}, {
         headers: {
             Authorization: `Bearer ${user?.name}`,
             'Content-Type': 'application/json',
@@ -24,16 +23,16 @@ async function getStatus(user: any, bookTitle: string, bookAuthor: string, bookI
             'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token'
         }
     });
-    const oldData = { ...previousData.data.data };
-    const oldSavedBooks = oldData?.savedBooks;
+    const oldData = { ...previousData.data.user };
+    const oldSavedBooks = oldData?.books;
     console.log(oldSavedBooks);
-    if (oldData?.savedBooks) {
+    if (oldSavedBooks.length>0) {
         const obj = { author: bookAuthor, title: bookTitle, img: bookImg };
         let flag = 0;
         for (let i = 0; i < oldSavedBooks.length; i++) {
             let element = oldSavedBooks[i];
             console.log('elements ', element);
-            if (element.author === obj.author && element.title === obj.title && element.img === obj.img) {
+            if (element.title === obj.title) {
                 flag = 1;
                 return true
             }
@@ -141,7 +140,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     const alpha = await getServerSession();
     let bookStatus = undefined;
     if (alpha) {
-        bookStatus = await getStatus(alpha?.user, data.title, "", data.imgUrl);
+        bookStatus = await getStatus(alpha?.user, data.title, data?.AuthorDetails[0]?.name, data.imgUrl);
     }
 
     return (
@@ -161,7 +160,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <div className='text-3xl font-bold text-blue-950 mb-5 '>
                                 {data.title}
                             </div>
-                            <Favourite bookTitle={data.title} bookImg={data.imgUrl} bookAuthor={""} initialStatus={bookStatus} />
+                            <Favourite bookId={bookTitle} bookAuthor={data?.AuthorDetails[0]?.name} bookImg={data.imgUrl} bookTitle={data.title} initialStatus={bookStatus} />
                         </div>
                         <div className='font-bold text-blue-950 mb-5 whitespace-break-spaces text-sm'>
                             By.{data?.AuthorDetails[0]?.name}
