@@ -32,7 +32,7 @@ async function getSummaryFromSanity(bookName: string, authorName: string, setDat
 
 async function getSummaryFromGPT(bookName: string, authorName: string, setData: any) {
     try {
-        const genAI = new GoogleGenerativeAI('AIzaSyAjSTF_9A09G_1NZsPa3oBk9D34XIZeOQU');
+        const genAI = new GoogleGenerativeAI('AIzaSyAA7_Md8AjKl0Qz5Cp1Ja6DUDLhEFqLue8');
         console.log("i am h");
         let keyIdeas: Array<string> = [];
         let summaries: Array<string> = [];
