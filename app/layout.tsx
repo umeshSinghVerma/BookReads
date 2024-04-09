@@ -17,6 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+      <meta name="paypost-site-verification" content="wjvjfi@tM?w(oT0?(eG9TNf>" />
+      </head>
       <body className={inter.className}>
         <AuthProvider>
           {children}
